@@ -10,6 +10,7 @@ import { ResetPassword } from "../ResetPassword";
 import { SignUp } from "../SignUp";
 import { Layout } from "../Layout";
 import UserBilling from "../Billing/UserBilling";
+import EnterpriseBilling  from "../Billing/EnterpriseBilling";
 
 // UnauthenticatedApp component representing the main application for unauthenticated users
 export const UnauthenticatedApp = () => {
@@ -30,6 +31,7 @@ export const UnauthenticatedApp = () => {
                             <Route path="/reset" element={<ResetPassword />} />
                             <Route path="/signup" element={<SignUp />} />
                             <Route path="/user/billing" element={<UserBilling />} />
+                            <Route path="/enterprise/billing" element={<EnterpriseBilling />} />
 
                             {/* Route for handling 404 (Not Found) errors */}
                             <Route path="*" element={<NotFound />} />
