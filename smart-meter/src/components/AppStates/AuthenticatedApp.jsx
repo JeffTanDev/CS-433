@@ -4,11 +4,11 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 // Import components for different pages within the application
 import { Layout } from "../Layout";
 import { Landing } from "../Landing";
-import { home } from "../home";
+import { Homepage } from "../Homepage";
 import { Login } from "../Login";
 import { ResetPassword } from "../ResetPassword";
 import { SignUp } from "../SignUp";
-//import { Profile } from "../Profile";
+import { Profile } from "../Profile";
 import { NotFound } from "../NotFound";
 import UserBilling from "../Billing/UserBilling";
 //import { EnterpriseBilling } from "../Billing/EnterpriseBilling";
@@ -26,11 +26,12 @@ export const AuthenticatedApp = () => {
                             {/* Index route for the landing page */}
                             <Route index element={<Landing />} />
 
-                            {/* Routes for various pages in the authenticated application .... add later <Route path="/profile" element={<Profile />} />*/}
-                            <Route path="/home" element={<home />} />
+                            {/* Routes for various pages in the authenticated application*/}
+                            <Route path="/home" element={<Homepage />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/reset" element={<ResetPassword />} />
                             <Route path="/signup" element={<SignUp />} />
+                            <Route path="/profile" element={<Profile />} />
                             {/* Add route for user's billing page */}
                             <Route path="/user/billing" element={<UserBilling />} />
                             {/* Add route for enterprise's billing page */}
