@@ -1,8 +1,8 @@
 import React from "react";
+import './UserBilling.css'; // 确保CSS文件路径正确
 
-// UserBilling component displays billing information
 const UserBilling = () => {
-  // Example data, subsequently replaced with data obtained from Firebase
+  // 示例数据
   const billingInfo = {
     companyName: "Electrico Ltd.",
     mailingAddress: "123 Energy Street, Power City, PC 4567",
@@ -14,43 +14,42 @@ const UserBilling = () => {
       { id: "OUTLET1", usage: 150, amount: 22.50 },
       { id: "OUTLET2", usage: 200, amount: 30.00 },
     ],
-    contactInfo: "Contact Us: +123456789 | support@electrico.com",
+    totalUsage: 350, // 总用电量
+    totalAmount: 52.50, // 总金额
   };
 
-  // Calculate total electricity consumption and total bill amount
-  const totals = billingInfo.outlets.reduce(
-    (acc, curr) => {
-      acc.totalUsage += curr.usage;
-      acc.totalAmount += curr.amount;
-      return acc;
-    },
-    { totalUsage: 0, totalAmount: 0 }
-  );
-
   return (
-    <div>
-      <h2>Billing Statement</h2>
-      <p><strong>Company Name:</strong> {billingInfo.companyName}</p>
-      <p><strong>Mailing Address:</strong> {billingInfo.mailingAddress}</p>
-      <p><strong>Order Number:</strong> {billingInfo.orderNumber}</p>
-      <p><strong>Order Date:</strong> {billingInfo.orderDate}</p>
-      <p><strong>User ID:</strong> {billingInfo.userId}</p>
-      <p><strong>User Name:</strong> {billingInfo.userName}</p>
-
-      <h3>Usage Details</h3>
-      {billingInfo.outlets.map((outlet) => (
-        <div key={outlet.id}>
-          <p><strong>Outlet ID:</strong> {outlet.id}</p>
-          <p><strong>Usage:</strong> {outlet.usage} kWh</p>
-          <p><strong>Amount:</strong> ${outlet.amount.toFixed(2)}</p>
+    <div className="user-billing">
+      <div className="header">
+        <div className="left">
+          <h2>Billing Statement</h2>
+          <p>Company Name: {billingInfo.companyName}</p>
+          <p>Mailing Address: {billingInfo.mailingAddress}</p>
         </div>
-      ))}
-
-      <h3>Totals</h3>
-      <p><strong>Total Usage:</strong> {totals.totalUsage} kWh</p>
-      <p><strong>Total Amount:</strong> ${totals.totalAmount.toFixed(2)}</p>
-
-      <p><strong>Contact Information:</strong> {billingInfo.contactInfo}</p>
+        <div className="right">
+          <p>Order Number: {billingInfo.orderNumber}</p>
+          <p>Order Date: {billingInfo.orderDate}</p>
+          <p>User ID: {billingInfo.userId}</p>
+          <p>User Name: {billingInfo.userName}</p>
+        </div>
+      </div>
+      <div className="body">
+        <h3>Usage Details</h3>
+        <div className="table">
+          {billingInfo.outlets.map((outlet, index) => (
+            <div className="row" key={index}>
+              <p>Outlet ID: {outlet.id}</p>
+              <p>Usage: {outlet.usage} kWh</p>
+              <p>Amount: ${outlet.amount.toFixed(2)}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="footer">
+        <h3>Totals</h3>
+        <p>Total Usage: {billingInfo.totalUsage} kWh</p>
+        <p>Total Amount: ${billingInfo.totalAmount.toFixed(2)}</p>
+      </div>
     </div>
   );
 };

@@ -1,0 +1,37 @@
+/* UserBilling.css */
+.user-billing {
+    font-family: Arial, sans-serif;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.left, .right {
+    width: 48%;
+}
+
+.body {
+    margin-top: 20px;
+}
+
+.table .row {
+    background-color: #f9f9f9;
+    margin: 10px 0;
+    padding: 10px;
+    border-left: 3px solid #007bff;
+}
+
+.footer {
+    margin-top: 20px;
+    text-align: center;
+}
