@@ -124,9 +124,6 @@ export const Profile = () => {
 
                 // Update the rendering of each setting based on snapshot data
                 updateSettingsRender(document.getElementById('dark'), data);
-                updateSettingsRender(document.getElementById('location'), data);
-                updateSettingsRender(document.getElementById('business'), data);
-                updateSettingsRender(document.getElementById('display'), data);
 
                 // Move this into its own component, load that component on each page.
                 document.documentElement.setAttribute('data-bs-theme', mode);
