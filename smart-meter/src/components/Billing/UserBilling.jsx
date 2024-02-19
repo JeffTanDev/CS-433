@@ -1,22 +1,65 @@
-import React from "react";
-import './UserBilling.css'; // 确保CSS文件路径正确
+import React, { useState, useEffect } from 'react';
+import { useAuth } from "../../hooks/useAuth"; 
+import { ref, onValue } from "firebase/database";
+import { rdb } from "../../firebase";
+import './UserBilling.css'; 
+
+function getCurrentPTDate() {
+  // Get the UTC time of the current date
+  const now = new Date();
+          
+  // Convert UTC to US Western Time (PT)
+  // Note: This assumes Daylight Saving Time, UTC-7 hours; non-Daylight Saving Time would be UTC-8 hours.
+  const ptOffset = now.getTimezoneOffset() + 420; // PT (Daylight Saving Time) or 480 (non-Daylight Saving Time)
+  const ptDate = new Date(now.getTime() - ptOffset*60000);
+  
+  // Formatting the date as YYYY-MM-DD
+  return ptDate.toISOString().split('T')[0];
+}
 
 const UserBilling = () => {
-  // 示例数据
-  const billingInfo = {
-    companyName: "Electrico Ltd.",
-    mailingAddress: "123 Energy Street, Power City, PC 4567",
-    orderNumber: "ORD123456789",
-    orderDate: "2024-02-10",
-    userId: "USR12345",
-    userName: "John Doe",
-    outlets: [
-      { id: "OUTLET1", usage: 150, amount: 22.50 },
-      { id: "OUTLET2", usage: 200, amount: 30.00 },
-    ],
-    totalUsage: 350, // 总用电量
-    totalAmount: 52.50, // 总金额
-  };
+  const { user } = useAuth(); // Use the useAuth hook to get the current user
+  const [billingInfo, setBillingInfo] = useState(null); // Initialize billing information status
+
+  // 从 Firebase 获取账单信息
+  useEffect(() => {
+    if (user) {
+      const billingRef = ref(rdb, 'Data/Users/' + user.uid);
+      onValue(billingRef, (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+
+          // Get the current date in U.S. Western Time
+          const currentDate = getCurrentPTDate();
+          // Checks if the Outlets exist and are an object
+          const outletsArray = data.Power && data.Power.Outlets ? Object.entries(data.Power.Outlets).map(([key, value]) => ({
+            id: key,
+            usage: value.usage,
+            amount: value.amount,
+          })) : [];
+          
+          setBillingInfo({
+            companyName: "Electrico Ltd.",
+            mailingAddress: "123 Energy Street, Power City, PC 4567",
+            orderNumber: "ORD123456789",
+            orderDate: currentDate,
+            userId: user.uid,
+            userName: user.displayName,
+            outlets: outletsArray,
+            totalUsage: data.Power.Total,
+            totalAmount: data.Power.Total * 0.15, // Assuming a price of $0.15 per kWh
+          });
+        } else {
+          console.log("No billing data available");
+        }
+      });
+    }
+  }, [user]);
+
+  //If no billing information is available, display a loading status or alert message
+  if (!billingInfo) {
+    return <div>Loading billing information...</div>;
+  }
 
   return (
     <div className="user-billing">

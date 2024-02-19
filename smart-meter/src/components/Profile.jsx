@@ -20,6 +20,7 @@ export const Profile = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [username, setUsername] = useState('');
+    console.log(user.uid)
 
     // Function to handle checkbox changes and update settings in the database
     const handleCheckboxChange = (e) => {
