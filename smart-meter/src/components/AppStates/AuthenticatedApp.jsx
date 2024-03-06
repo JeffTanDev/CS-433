@@ -11,6 +11,7 @@ import { SignUp } from "../SignUp";
 import { Profile } from "../Profile";
 import { NotFound } from "../NotFound";
 import UserBilling from "../Billing/UserBilling";
+import EnergyUsageComponent from "../Encryption";
 //import { EnterpriseBilling } from "../Billing/EnterpriseBilling";
 
 // AuthenticatedApp component representing the main application for authenticated users
@@ -36,7 +37,7 @@ export const AuthenticatedApp = () => {
                             <Route path="/user/billing" element={<UserBilling />} />
                             {/* Add route for enterprise's billing page */}
                             {/*<Route path="/enterprise/billing" element={<EnterpriseBilling />} />*/}
-
+                            <Route path="/usage" element={<EnergyUsageComponent />} />
                             {/* Route for handling 404 (Not Found) errors */}
                             <Route path="*" element={<NotFound />} />
                         </Route>

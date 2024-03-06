@@ -20,8 +20,8 @@ function getCurrentPTDate() {
 const UserBilling = () => {
   const { user } = useAuth(); // Use the useAuth hook to get the current user
   const [billingInfo, setBillingInfo] = useState(null); // Initialize billing information status
-
-  // 从 Firebase 获取账单信息
+  //console.log(user)
+  // Getting Billing Information from Firebase
   useEffect(() => {
     if (user) {
       const billingRef = ref(rdb, 'Data/Users/' + user.uid);
