@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from "../hooks/useAuth";
 import { ref, onValue } from "firebase/database";
 import { rdb } from '../firebase'; 
+import { decryptAES } from '../utils/cryptoUtils';
+import '../styles/UserBilling.css'
 
 // Assuming privateKeyString is the private key string obtained from localStorage
-const privateKeyString = localStorage.getItem('privateKey');
+const privateKeyString = localStorage.getItem('UserPrivateKey');
 
 // Convert Base64-encoded private key to ArrayBuffer
 function base64ToArrayBuffer(base64) {
-  console.log(base64)
+  //console.log(base64)
   const binaryString = window.atob(base64);
   const bytes = new Uint8Array(binaryString.length);
   for (let i = 0; i < binaryString.length; i++) {
@@ -67,10 +69,10 @@ function getCurrentPTDate() {
     return ptDate.toISOString().split('T')[0];
   }
 
-const Decryption = ({ userId }) => {
-    const [decryptedData, setDecryptedData] = useState("");
+const Decryption_user = ({ userId }) => {
+    const [usageDataList, setUsageDataList] = useState([]);
     const { user } = useAuth();
-    console.log(user)
+    //console.log(user)
 
     useEffect(() => {
       const processData = async () => {
@@ -78,17 +80,21 @@ const Decryption = ({ userId }) => {
         onValue(dataRef, async (snapshot) => {
             const data = snapshot.val();
             if (data) {
-              const { base64_encryptedTotalUsageForCompany } = data;
-              //console.log(base64_encryptedTotalUsageForCompany)
-              const encryptedDataArrayBuffer = base64ToArrayBuffer(base64_encryptedTotalUsageForCompany);
+              const { base64_encryptedAESKeyForUser, base64_aesEncryptedData} = data;
+              const encryptedAESKeyArrayBuffer = base64ToArrayBuffer(base64_encryptedAESKeyForUser);
+              const encryptedDataArrayBuffer = base64ToArrayBuffer(base64_aesEncryptedData);
+              //console.log(encryptedDataArrayBuffer)
 
               if (privateKeyString) {
                   // First, import the private key
                   const privateKey = await importPrivateKey(privateKeyString);
                   if (privateKey) {
                       // Decryption using the converted private key
-                      const decrypted = await decryptWithPrivateKey(encryptedDataArrayBuffer, privateKey);
-                      setDecryptedData(decrypted);
+                      const decrypted = await decryptWithPrivateKey(encryptedAESKeyArrayBuffer, privateKey);
+                      const aesKeyArrayBuffer = base64ToArrayBuffer(decrypted);
+                      const decryptedAESData = await decryptAES(encryptedDataArrayBuffer, aesKeyArrayBuffer);
+                      setUsageDataList(JSON.parse(decryptedAESData));
+                      console.log(decryptedAESData)
                   }
               }
             }
@@ -106,28 +112,41 @@ const Decryption = ({ userId }) => {
         userName: `${user.displayName}`,
         contactInfo: "Contact Us: +123456789 | support@electrico.com",
       };
+      const totalAmount = usageDataList.map((usageItem) => Number(usageItem.usage)).reduce((acc, usage) => {
+        return acc + usage;
+      }, 0);
 
   return (
-    // <div>
-    //   <h2>Decrypted Data</h2>
-    //   <p>{decryptedData}</p>
-    // </div>
-    <div>
-    <h2>Billing Statement</h2>
-    <p><strong>Company Name:</strong> {billingInfo.companyName}</p>
-    <p><strong>Mailing Address:</strong> {billingInfo.mailingAddress}</p>
-    <p><strong>Order Number:</strong> {billingInfo.orderNumber}</p>
-    <p><strong>Order Date:</strong> {billingInfo.orderDate}</p>
-    <p><strong>User ID:</strong> {billingInfo.userId}</p>
-    <p><strong>User Name:</strong> {billingInfo.userName}</p>
-
-    <h3>Totals</h3>
-    <p><strong>Total Usage:</strong> {decryptedData} kWh</p>
-    <p><strong>Total Amount:</strong> ${decryptedData}</p>
-
-    <p><strong>Contact Information:</strong> {billingInfo.contactInfo}</p>
-  </div>
+<div className="user-billing">
+      <div className="header">
+        <div className="left">
+          <h2>Billing Statement</h2>
+          <p>Company Name: {billingInfo.companyName}</p>
+          <p>Mailing Address: {billingInfo.mailingAddress}</p>
+        </div>
+        <div className="right">
+          <p>Order Number: {billingInfo.orderNumber}</p>
+          <p>Order Date: {billingInfo.orderDate}</p>
+          <p>User ID: {billingInfo.userId}</p>
+          <p>User Name: {billingInfo.userName}</p>
+        </div>
+      </div>
+      <div className="body">
+        <h3>Usage Details</h3>
+        <div className="table">
+            {usageDataList.map((usageItem, index) => (
+                <p key={index}><strong>Outlet {index + 1}:</strong> {usageItem.usage} kWh</p>
+            ))}
+        </div>
+      </div>
+      <div className="footer">
+        <h3>Totals</h3>
+        <p>Total Usage: {totalAmount} kWh</p>
+        <p>Total Amount: ${totalAmount}</p>
+      </div>
+    </div>
+  
   );
 };
 
-export default Decryption;
+export default Decryption_user;

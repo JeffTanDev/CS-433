@@ -10,8 +10,6 @@ import { ResetPassword } from "../ResetPassword";
 import { SignUp } from "../SignUp";
 import { Layout } from "../Layout";
 //import { Profile } from "../Profile";
-//import UserBilling from "../Billing/UserBilling";
-//import EnterpriseBilling  from "../Billing/EnterpriseBilling";
 
 // UnauthenticatedApp component representing the main application for unauthenticated users
 export const UnauthenticatedApp = () => {

@@ -10,10 +10,9 @@ import { ResetPassword } from "../ResetPassword";
 import { SignUp } from "../SignUp";
 import { Profile } from "../Profile";
 import { NotFound } from "../NotFound";
-import UserBilling from "../Billing/UserBilling";
 import Encryption from "../Encryption";
-import Decryption from "../Decryption";
-//import { EnterpriseBilling } from "../Billing/EnterpriseBilling";
+import Decryption_com from "../Decryption_Com";
+import Decryption_user from "../Decryption_User";
 
 // AuthenticatedApp component representing the main application for authenticated users
 export const AuthenticatedApp = () => {
@@ -35,9 +34,9 @@ export const AuthenticatedApp = () => {
                             <Route path="/signup" element={<SignUp />} />
                             <Route path="/profile" element={<Profile />} />
                             {/* Add route for user's billing page */}
-                            <Route path="/user/billing" element={<UserBilling />} />
                             <Route path="/usage" element={<Encryption />} />
-                            <Route path="/decryption" element={<Decryption />} />
+                            <Route path="/decryption_com" element={<Decryption_com />} />
+                            <Route path="/decryption_user" element={<Decryption_user />} />
                             {/* Route for handling 404 (Not Found) errors */}
                             <Route path="*" element={<NotFound />} />
                         </Route>

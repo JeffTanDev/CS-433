@@ -14,14 +14,24 @@ function arrayBufferToBase64(buffer) {
   return window.btoa(binary); // Converting binary strings to Base64 strings using window.btoa
 }
 
-async function exportAndStorePrivateKey(privateKey) {
-  const exported = await window.crypto.subtle.exportKey(
+async function exportAndStorePrivateKey_c(privateKey) {
+  const exported_u = await window.crypto.subtle.exportKey(
       "pkcs8",
       privateKey
   );
-  const exportedAsString = ab2str(exported); // ArrayBuffer to string
-  const exportedAsBase64 = window.btoa(exportedAsString); // to Base64
-  localStorage.setItem("privateKey", exportedAsBase64); // store
+  const exportedAsString_u = ab2str(exported_u); // ArrayBuffer to string
+  const exportedAsBase64_u = window.btoa(exportedAsString_u); // to Base64
+  localStorage.setItem("CompanyPrivateKey", exportedAsBase64_u); // store
+}
+
+async function exportAndStorePrivateKey_u(privateKey) {
+  const exported_c = await window.crypto.subtle.exportKey(
+      "pkcs8",
+      privateKey
+  );
+  const exportedAsString_c = ab2str(exported_c); // ArrayBuffer to string
+  const exportedAsBase64_c = window.btoa(exportedAsString_c); // to Base64
+  localStorage.setItem("UserPrivateKey", exportedAsBase64_c); // store
 }
 
 // ArrayBuffer to string
@@ -43,18 +53,28 @@ const Encryption = () => {
     // Generate key pairs
     const userKeys = await generateKeys();
     const companyKeys = await generateKeys();
-    exportAndStorePrivateKey(companyKeys.privateKey);
+    exportAndStorePrivateKey_c(companyKeys.privateKey);
+    exportAndStorePrivateKey_u(userKeys.privateKey);
   
     const { key: aesKey, encryptedData: aesEncryptedData } = await encryptAES(JSON.stringify(usages)); // The encryptAES function is modified to return an object containing the key and encrypted data
   
-    const encryptedAESKeyForUser = await encryptWithPublicKey(JSON.stringify(aesKey), userKeys.publicKey); // Encrypting an AES key with the user's public key requires ensuring that encryptWithPublicKey can handle serialized objects like these
+
+    // 导出 AES Key 为 ArrayBuffer 格式
+    const exportedAesKey = await crypto.subtle.exportKey("raw", aesKey);
+
+    // 将导出的 ArrayBuffer 编码为 Base64 并缓存
+    const base64_exportedAesKey = arrayBufferToBase64(exportedAesKey);
+
+    const encryptedAESKeyForUser = await encryptWithPublicKey(base64_exportedAesKey, userKeys.publicKey);
+    // const encryptedAESKeyForUser = await encryptWithPublicKey(JSON.stringify(aesKey), userKeys.publicKey); // Encrypting an AES key with the user's public key requires ensuring that encryptWithPublicKey can handle serialized objects like these
+    
     const encryptedTotalUsageForCompany = await encryptWithPublicKey(total.toString(), companyKeys.publicKey); // Encrypt total electricity consumption with company public key
     
-    console.log(aesEncryptedData)
-    console.log(encryptedAESKeyForUser)
-    console.log(encryptedTotalUsageForCompany)
-    console.log(user)
-    console.log(user.uid)
+    // console.log(aesEncryptedData)
+    // console.log(encryptedAESKeyForUser)
+    // console.log(encryptedTotalUsageForCompany)
+    // console.log(user)
+    // console.log(user.uid)
 
     const base64_aesEncryptedData = arrayBufferToBase64(aesEncryptedData);
     const base64_encryptedAESKeyForUser = arrayBufferToBase64(encryptedAESKeyForUser);
